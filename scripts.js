@@ -3,8 +3,8 @@
 class Recipe {
     constructor(name, ingredients, instructions) {
         this.name = name;
-        // this.ingredients = ingredients;
-        // this.instructions = instructions;
+        this.ingredients = ingredients;
+        this.instructions = instructions;
 
     }
 
@@ -19,9 +19,9 @@ class Recipe {
 }
 
 class Ingredient {
-    constructor(name) {
+    constructor(ammount, name) {
         this.name = name
-        // this.ammount = ammount
+        this.ammount = ammount
 
 
     }
@@ -78,7 +78,21 @@ class Menu { // main appplication driver
         return input;
     }
 
-    fetchAllRecipies() {
+    addRecipeOptions(){
+        let input = prompt(`
+        Please add Ingredients and Instructions to your new Recipe:
+        Which do you wish to add?
+        1) Add an ingredient 
+        2) add an instruction
+        3) all done `);
+        if (input === ""){
+            input += this.addRecipeOptions();
+        }
+        return input;
+
+    }
+
+    fetchAllRecipies() { // helper method to create a numbered list  of all recipies for printing or selection 
 
         let list = "";
         for (let i = 0; i < this.recipes.length; i++){
@@ -92,7 +106,7 @@ class Menu { // main appplication driver
         return list;
     }
 
-    listAllRecipies(){
+    listAllRecipies(){ // alerts all recipes 
         let recipeDisplay = "";
         if(this.selectedRecipe == null){
             recipeDisplay = "You do not have a recipe selected";
@@ -100,22 +114,66 @@ class Menu { // main appplication driver
         else{
             recipeDisplay = this.selectedRecipe;
         }
-        alert(`Recipies in the Box:${this.fetchAllRecipies()}
-        ${recipeDisplay}`);
+        alert(`Recipies in the Box:${this.fetchAllRecipies()}`);
+    }
+
+    addIngredient(){
+        let ingredientName = prompt(
+            `Please enter ingredient name`
+        );
+        let ingredientAmmount = prompt(
+            `Please enter ingredient ammount`
+        );
+
+        let newIngredient = new Ingredient(ingredientAmmount, ingredientName);
+
+        return newIngredient;
+
+    }
+
+    addInstruction(){
+        let instruction = prompt(
+            `Please enter new instruction`
+        );
+        return instruction;
     }
 
 
-    addRecipeMenue(){
-       
-    }
 
-    addRecipe() {
+    addRecipe() { // add a recipe to recipe list 
+        let newRecipe = new Recipe("", [],[]); // empty placeholder object to populate with user input
+        newRecipe.name += prompt(`Please enter new recipe name:`); // get recipe name from user
         
-        let recipeName = prompt(`Please enter new recipe name:`);
-        this.recipes.push(new Recipe(recipeName));
-        let listPrint = this.fetchAllRecipies();
+        
+        let addRecipeMenue = this.addRecipeOptions();
+
+        while (addRecipeMenue != 3) { // prompt the user to keep adding ingredients or instructions untill finished 
+            switch(addRecipeMenue){
+                case '1':
+                    newRecipe.ingredients.push(this.addIngredient());
+                    break;
+                
+                case '2':
+                    newRecipe.instructions.push(this.addInstruction());                    
+                    break;
+
+                case '3':
+                    addRecipeMenue = 0;
+                    break;
+
+                default:
+                    addRecipeMenue = this.addRecipeOptions();
+
+            }
+            addRecipeMenue = this.addRecipeOptions();
+
+        }
+
+        this.recipes.push(newRecipe); // adds the  new recipe object to the menue's recipes array
+        
+        let listPrint = this.fetchAllRecipies(); 
         console.log(this.recipes.toString);
-        alert(`Recipe : "${recipeName}" added to recipie list:
+        alert(`Recipe : "${newRecipe.name}" added to recipie list:
         Recipies in the box:
         ${listPrint}`);
        
