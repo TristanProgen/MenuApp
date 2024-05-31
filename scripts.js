@@ -29,14 +29,14 @@ class Recipe {
         for (let i = 0; i < this.instructions.length; i++ ){
             tempList += `
             ${i + 1}) ${this.instructions[i]}`;
-            //(i + 1 ) + ") " + this.instructions[i] + "\n"
+            
 
         }
         return tempList;
 
     }
 
-    describe() {  // Helper method to print out a Recipe object in a user frendly format 
+    describe() {  // helper method to print out a Recipe object in a user frendly format 
         
         return `
         ${this.name}  
@@ -87,12 +87,19 @@ class Menu { // main appplication driver
                 case '3':
                     this.addRecipe();
                     break;
+
                 case '4':
+                    this.updateRecipe();
+                    break;
+
+                case '5':
                     this.deleteRecipe();
                     break;
+
                 case '0':
                     userSelection = 0;
                     break;
+
                 default:
                     userSelection = this.showOptions();
 
@@ -112,14 +119,39 @@ class Menu { // main appplication driver
         Please select an option:
             1) View all recipies 
             2) View Recipe details
-            3) Add a recipe 
-            4) Delete a recipe 
+            3) Add a recipe
+            4) Update recipe 
+            5) Delete a recipe 
             --------------------
             Press 0 to exit`);
         if (input === "") {
             input += this.showOptions();
         }
         return input;
+    }
+
+    fetchAllRecipies() { // helper method to create a numbered list  of all recipies for printing or selection 
+
+        let list = "";
+        for (let i = 0; i < this.recipes.length; i++) {
+            list += `
+            ${i + 1}) ${this.recipes[i].name}`
+            
+
+
+        };
+
+        return list;
+    }
+
+    listAllRecipies() { // alerts all recipes 
+        if(this.recipes.length > 0){
+            alert(`Recipies in the Box:${this.fetchAllRecipies()}`);
+
+        } else {
+            alert(`Recipe Box is currently empty )`);
+        }
+        
     }
 
     viewRecipeDetails(){
@@ -156,29 +188,7 @@ class Menu { // main appplication driver
 
     }
 
-    fetchAllRecipies() { // helper method to create a numbered list  of all recipies for printing or selection 
 
-        let list = "";
-        for (let i = 0; i < this.recipes.length; i++) {
-            list += `
-            ${i + 1}) ${this.recipes[i].name}`
-            console.log(list);
-
-
-        };
-
-        return list;
-    }
-
-    listAllRecipies() { // alerts all recipes 
-        if(this.recipes.length > 0){
-            alert(`Recipies in the Box:${this.fetchAllRecipies()}`);
-
-        } else {
-            alert(`Recipe Box is currently empty )`);
-        }
-        
-    }
 
     addIngredient() {
         let ingredientName = prompt(
@@ -244,13 +254,70 @@ class Menu { // main appplication driver
 
     }
 
+    updateRecipeOptions(){
+        let input = prompt(`
+        Please select the field of the recipe you wish to update?
+        1) Update Recipe Name  
+        2) Update a Recipe Ingredient 
+        3) Update a Recipe Instruction
+        4) all done  `);
+        if (input === "") {
+            input += this.updateRecipeOptions();
+        }
+        return input;
+
+    }
+
+    updateRecipeName(oldName){
+        oldName = oldName;        
+        this.selectedRecipe.name = prompt(`Current Name: ${this.selectedRecipe.name} 
+        Please enter new name for thsi Recipe`);
+
+        alert(`Recipe name changed from ${oldName} to ${this.selectedRecipe.name}`);
+    }
+
+    updateRecipe(){
+        let index = prompt(
+            `Enter the corisponding number for the recipe you wish to update:
+            ${this.fetchAllRecipies()}`
+        );
+        
+
+        let userUpdateSelection = this.updateRecipeOptions();
+
+        while (userUpdateSelection != 4){
+            switch(userUpdateSelection){
+                case '1':
+                    this.selectedRecipe = this.recipes[userUpdateSelection -1];
+                    this.updateRecipeName(this.selectedRecipe.name);
+                    break;
+
+                case '2':
+                    this.selectedRecipe = this.recipes[userUpdateSelection -1];
+                    
+
+                    break;
+                case '3':
+                    break;
+                case '4':
+                    break;
+                default:
+                    userUpdateSelection = this.updateRecipeOptions();    
+            }
+            userUpdateSelection = this.updateRecipeOptions(); 
+        }    
+
+
+
+    }
+
     deleteRecipe() {
         let index = prompt(
-            `Enfer the corisponding number for the recipe you wish to delete:
+            `Enter the corisponding number for the recipe you wish to delete:
             ${this.fetchAllRecipies()}`
         );
 
-        if (index > -1 && index <= this.recipes.length) {
+        if (index > 0 && index <= this.recipes.length) {
             this.recipes.splice((index - 1), 1);
 
         }
