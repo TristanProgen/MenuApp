@@ -122,7 +122,6 @@ class Menu { // main appplication driver
             3) Add a recipe
             4) Update recipe 
             5) Delete a recipe 
-            --------------------
             Press 0 to exit`);
         if (input === "") {
             input += this.showOptions();
@@ -136,8 +135,6 @@ class Menu { // main appplication driver
         for (let i = 0; i < this.recipes.length; i++) {
             list += `
             ${i + 1}) ${this.recipes[i].name}`
-            
-
 
         };
 
@@ -154,7 +151,7 @@ class Menu { // main appplication driver
         
     }
 
-    viewRecipeDetails(){
+    viewRecipeDetails(){  // Prints a single user selected Recipe with all Ingredients and Instructions 
         if(this.recipes.length > 0){
 
             let index = prompt(
@@ -174,8 +171,9 @@ class Menu { // main appplication driver
 
     }
 
-    addRecipeOptions() {
-        let input = prompt(`
+    addRecipeOptions() { // helper method to display a menue to user for adding recipe ingredients and instructions 
+        // prompt the user to keep adding ingredients or instructions untill the indicate they are finished
+        let input = prompt(` 
         Please add Ingredients and Instructions to your new Recipe:
         Which do you wish to add?
         1) Add an ingredient 
@@ -254,7 +252,7 @@ class Menu { // main appplication driver
 
     }
 
-    updateRecipeOptions(){
+    updateRecipeOptions(){ // helper function to display a menue for recipe updates 
         let input = prompt(`
         Please select the field of the recipe you wish to update?
         1) Update Recipe Name  
@@ -268,44 +266,138 @@ class Menu { // main appplication driver
 
     }
 
-    updateRecipeName(oldName){
+    updateRecipeName(oldName){ // prompt user for new recipe name, display old and new name to user 
         oldName = oldName;        
         this.selectedRecipe.name = prompt(`Current Name: ${this.selectedRecipe.name} 
-        Please enter new name for thsi Recipe`);
+        Please enter new name for this Recipe`);
 
         alert(`Recipe name changed from ${oldName} to ${this.selectedRecipe.name}`);
     }
 
-    updateRecipe(){
-        let index = prompt(
-            `Enter the corisponding number for the recipe you wish to update:
-            ${this.fetchAllRecipies()}`
-        );
+    fetchAllIngredients(){ // Helper function to generate a list of all ingrediends in a Recipe 
+    
+        let ingredientList = "";
+        for (let i = 0; i < this.selectedRecipe.ingredients.length; i ++ ){
+            ingredientList += `
+            ${i + 1 }) ${this.selectedRecipe.ingredients[i].name}`;
+
+        }
+
+        return ingredientList;
         
+    }
 
-        let userUpdateSelection = this.updateRecipeOptions();
+    updateRecipeIngredient(){
+        if(this.selectedRecipe.ingredients.length > 0){
+            let index = prompt(`Enter the corisponding number for the ingredient you wish to update:
+            ${this.fetchAllIngredients()}`); // loop through all ingredients in selected recipe and present list to user to choos which to update
+            let oldIngredient = this.selectedRecipe.ingredients[index -1];
+            let newIngredientName = prompt(`Enter new Ingredient Name`);
+            let newIngredientAmmount = prompt(`Enter new Ingredient Ammount`);
 
-        while (userUpdateSelection != 4){
-            switch(userUpdateSelection){
-                case '1':
-                    this.selectedRecipe = this.recipes[userUpdateSelection -1];
-                    this.updateRecipeName(this.selectedRecipe.name);
-                    break;
+            let newIngredient = new Ingredient(newIngredientAmmount, newIngredientName);
 
-                case '2':
-                    this.selectedRecipe = this.recipes[userUpdateSelection -1];
-                    
 
-                    break;
-                case '3':
-                    break;
-                case '4':
-                    break;
-                default:
-                    userUpdateSelection = this.updateRecipeOptions();    
-            }
-            userUpdateSelection = this.updateRecipeOptions(); 
-        }    
+            this.selectedRecipe.ingredients.splice((index -1), 1, newIngredient); // replace the old ingredint with the new ingredient in the array 
+
+            alert(`Ingredient changed:
+            Old Ingredent  
+            ${oldIngredient.ammount} : ${oldIngredient.name}
+            Changed to:
+            ${newIngredient.ammount} : ${newIngredient.name}`);
+
+
+        } else {
+            alert(`This Recipe does not have ingredients!`);
+        }
+    }
+
+
+    fetchAllInstructions(){ // helper method to fetch a list of all instruction on a recipe object 
+
+        let instructionList = "";
+        for (let i = 0; i < this.selectedRecipe.instructions.length; i ++ ){
+            instructionList += `
+            ${i + 1 }) ${this.selectedRecipe.instructions[i]}`;
+
+        }
+
+        return instructionList;
+
+    }
+
+    updateInstruction(){
+        if(this.selectedRecipe.instructions.length > 0){
+            
+            let index = prompt(`Enter the corisponding number for the instruction you wish to update:
+            ${this.fetchAllInstructions()}`); // loop through all instruction in selected recipe and present list to user to choos which to update
+            let oldInstruction = this.selectedRecipe.instructions[index -1];
+            let newInstruction = prompt(`Enter new instruction`);
+
+            this.selectedRecipe.instructions.splice((index -1), 1, newInstruction);
+
+            alert(`Instruction changed:
+            Old Instruction:
+            ${oldInstruction}
+            Changed to:
+            ${newInstruction}`);
+
+
+
+        } else {
+            alert(`This Recipe does not have instructions!`);
+        }
+    }
+
+
+
+
+
+    updateRecipe(){ // user selection for which recipe they wish to update 
+        if(this.recipes.length > 0){
+
+            let index = prompt( // Prompt user with list of Recipies in Box so they can select which they wish to update
+                `Enter the corisponding number for the recipe you wish to update:
+                ${this.fetchAllRecipies()}`
+            );  
+            
+            this.selectedRecipe = this.recipes[index -1]; // set user selection to targeted recipe object 
+    
+            let userUpdateSelection = this.updateRecipeOptions();
+
+            // once recipe is selected, prompt user for which field on the recipe to update 
+    
+            while (userUpdateSelection != 4){
+                switch(userUpdateSelection){
+                    case '1': // update name 
+                        
+                        this.updateRecipeName(this.selectedRecipe.name);
+                        break;
+    
+                    case '2': // update an ingredient 
+                        
+                        this.updateRecipeIngredient(this.selectedRecipe.ingredients);
+                        break;
+
+                    case '3': // update an instruction 
+                        this.updateInstruction(this.selectedRecipe.instruction);
+                        break;
+
+                    case '4': // back to main menue 
+                        break;
+
+                    default:
+                        userUpdateSelection = this.updateRecipeOptions();    
+                }
+                userUpdateSelection = this.updateRecipeOptions(); 
+            } 
+
+        } else {
+            alert(`
+        Recipe Box is curently empty:
+        First add a Recipe before you Update a Recipe`);
+        }
+           
 
 
 
